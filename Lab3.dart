@@ -3,7 +3,7 @@
 
 const String rollNo = '04072312041';
 
-// ===== Seeded settings (generated from YOUR roll number). Do not edit. ===== 
+// ===== Seeded settings (generated from YOUR roll number). Do not edit. =====
 final int seed = int.parse(rollNo.substring(rollNo.length - 2));
 final int t = seed ~/ 10; // tens digit
 final int u = seed % 10; // units digit
@@ -28,36 +28,44 @@ final int bigOrderLimit = 450 + 20 * t;
 final int balanceCap = 600 + 20 * t;
 final int couponPercent = 5 + t + u;
 // ===========================================================================
+
 class Dish {
   late String name;
   late int price;
 }
 
-
 class MenuItem {
   String name;
   int price;
-
   MenuItem(this.name, this.price) {
+    // Raise price to pricefloor if it low
     if (this.price < priceFloor) {
       this.price = priceFloor;
     }
   }
 
+  // name constructor for free items
   MenuItem.free(this.name) : price = 0;
 
+  // name constructor that creates an item from text
   MenuItem.fromString(String text)
-      : name = text.split(':')[0],
-        price = int.parse(text.split(':')[1]);
-}
+    : name = text.split(':')[0],
+      price = int.parse(text.split(':')[1]);
 
+  // Step 8: Nice string representation
+  @override
+  String toString() => '$name (Rs $price)';
+}
 
 class OrderLog {
   static OrderLog? _instance;
+
   final List<String> entries = [];
 
+  // Private name constructor
   OrderLog._internal();
 
+  // factory  constructor returns the same object
   factory OrderLog() {
     return _instance ??= OrderLog._internal();
   }
@@ -72,35 +80,96 @@ class OrderLine {
   final int tax;
 
   OrderLine(this.item, this.qty)
-      : total = item.price * qty,
-        tax = item.price * qty * taxPercent ~/ 100,
-        assert(qty > 0, 'qty must be positive');
+    : total = item.price * qty,
+      tax = item.price * qty * taxPercent ~/ 100,
+      assert(qty > 0, 'qty must be positive');
 
+  // Step 6: Getter for total including ta
   int get grand => total + tax;
 
+  // Step 6: Getter for checking whether it is a big order
   bool get isBigOrder => grand > bigOrderLimit;
 
+  // Step 6: Getter for a readable label
   String get label => '${item.name} x$qty';
 }
 
+// Main order reused in later step
 OrderLine mainOrder() {
-  return OrderLine(
-    MenuItem(menu[u], priceOf(u)),
-    2 + (t + u) % 5,
-  );
+  return OrderLine(MenuItem(menu[u], priceOf(u)), 2 + (t + u) % 5);
+}
+
+class StudentCard {
+  final String owner;
+
+  // Private backing field
+  int _balance;
+
+  StudentCard(this.owner) : _balance = 0;
+
+  int get balance => _balance;
+
+  set balance(int v) {
+    if (v < 0) {
+      _balance = 0;
+    } else if (v > balanceCap) {
+      _balance = balanceCap;
+    } else {
+      _balance = v;
+    }
+  }
+}
+
+List<MenuItem> buildMenu() {
+  return [
+    for (int k = 0; k < 4; k++)
+      MenuItem.fromString(
+        '${menu[(u + 3 * k) % 10]}:${priceOf((u + 3 * k) % 10)}',
+      ),
+  ];
+}
+
+List<OrderLine> buildReceipt() {
+  List<MenuItem> items = buildMenu();
+
+  return [for (int k = 0; k < 3; k++) OrderLine(items[k], 1 + (t + k) % 4)];
+}
+
+class Coupon {
+  static final Map<String, Coupon> _cache = {};
+
+  final String code;
+  final int percent;
+  final int minSpend;
+
+  Coupon(this.code, this.percent)
+    : minSpend = percent * 70,
+      assert(percent >= 1 && percent <= 50, 'percent must be between 1 and 50');
+
+  factory Coupon.fromCode(String code) {
+    return _cache.putIfAbsent(code, () => Coupon(code, couponPercent));
+  }
+
+  int discountOn(int amount) {
+    if (amount >= minSpend) {
+      return amount * percent ~/ 100;
+    }
+
+    return 0;
+  }
 }
 
 void main() {
-  // step1();
-  // step2();
-  // step3();
-  // step4();
+  step1();
+  step2();
+  step3();
+  step4();
   step5();
-  // step6();
-  // step7();
-  // step8();
-  // step9();
-  // step10();
+  step6();
+  step7();
+  step8();
+  step9();
+  step10();
 }
 
 void step1() {
@@ -130,6 +199,8 @@ void step2() {
   print('Step 2: ${a.name} Rs ${a.price}');
   print('Step 2: Test Special Rs ${b.price}');
 }
+// STEP 2 - Think:
+// price cannot be final because the constructor may change it when the supplied price is below  pricefloor
 
 void step3() {
   print('--- Step 3 ---');
@@ -137,14 +208,14 @@ void step3() {
   MenuItem freebie = MenuItem.free('Water');
 
   int i = (u + 2) % 10;
-  MenuItem parsed = MenuItem.fromString(
-    '${menu[i]}:${priceOf(i)}',
-  );
+  MenuItem parsed = MenuItem.fromString('${menu[i]}:${priceOf(i)}');
 
   print('Step 3: ${freebie.name} Rs ${freebie.price}');
   print('Step 3: ${parsed.name} Rs ${parsed.price}');
   print('Step 3: floor=$priceFloor, free price=${freebie.price}');
 }
+// STEP 3 - Think:
+// free() uses a different named constructor, so it directly initializes price to 0 and does not execute the main constructor floor logic
 
 void step4() {
   print('--- Step 4 ---');
@@ -166,6 +237,8 @@ void step4() {
   print('Step 4: entries = ${log1.entries.length}');
   print('Step 4: last = ${log2.entries.last}');
 }
+// STEP 4 - Think:
+// The underscore makes instance and internal  private to this Dart library file Without it outside code could access them
 
 void step5() {
   print('--- Step 5 ---');
@@ -182,3 +255,110 @@ void step5() {
     print('Step 5: assert fired');
   }
 }
+// STEP 4 - Think:
+// The underscore makes instance and internal private to this Dart library file Without it outside code could access them
+
+void step6() {
+  print('--- Step 6 ---');
+
+  OrderLine line = mainOrder();
+
+  print('Step 6: grand=${line.grand}');
+  print('Step 6: big order? ${line.isBigOrder} (limit $bigOrderLimit)');
+  print('Step 6: label=${line.label}');
+}
+// STEP 6 - Think:
+// A getter can be read like a field and can  calculate a value dynamically instead of storing that value directly
+
+void step7() {
+  print('--- Step 7 ---');
+
+  StudentCard card = StudentCard('S$seed');
+
+  card.balance = seed * 10 + 50;
+  print('Step 7: topped up -> ${card.balance}');
+
+  card.balance = -seed - 1;
+  print('Step 7: bad value -> ${card.balance}');
+
+  card.balance = balanceCap - u;
+  print('Step 7: reset -> ${card.balance}');
+
+  card.balance = card.balance - mainOrder().grand;
+  print('Step 7: paid order -> ${card.balance}');
+}
+// STEP 7 - Think:
+// Another option for an invalid value would be to throw an  exception instead of silently clamping it
+
+void step8() {
+  print('--- Step 8 ---');
+
+  List<MenuItem> items = buildMenu();
+
+  MenuItem priciest = items.reduce((a, b) => a.price > b.price ? a : b);
+
+  int sum = items.fold(0, (total, item) => total + item.price);
+
+  print('Step 8: menu = $items');
+  print('Step 8: priciest = ${priciest.name}');
+  print('Step 8: sum = $sum');
+}
+
+void step9() {
+  print('--- Step 9 ---');
+
+  List<OrderLine> receipt = buildReceipt();
+
+  int sum = 0;
+
+  for (OrderLine line in receipt) {
+    print('Step 9: ${line.label} = ${line.grand}');
+
+    OrderLog().add('receipt: ${line.label}');
+
+    sum += line.grand;
+  }
+
+  print('Step 9: receipt total = $sum');
+  print('Step 9: log size = ${OrderLog().entries.length}');
+}
+
+void step10() {
+  print('--- Step 10 ---');
+
+  String code = 'CAFE${seed.toString().padLeft(2, '0')}';
+
+  Coupon c1 = Coupon.fromCode(code);
+  Coupon c2 = Coupon.fromCode(code);
+
+  List<OrderLine> receiptLines = buildReceipt();
+
+  int receipt = receiptLines.fold(0, (sum, line) => sum + line.grand);
+
+  int discount = c1.discountOn(receipt);
+
+  print(
+    'Step 10: $code gives ${c1.percent}% off, '
+    'min spend ${c1.minSpend}',
+  );
+
+  print('Step 10: cached? ${identical(c1, c2)}');
+
+  print(
+    'Step 10: receipt $receipt, '
+    'discount $discount, '
+    'payable ${receipt - discount}',
+  );
+}
+
+// Q1. Animal(this.name, this.type); and the verbose constructor give the same result. What does the shorthand save you?
+// The shorthand saves us from writing the field assignments manually. It automatically assigns the constructor parameters to the fields.
+
+// Q2. When would you choose a named constructor, and when a factory constructor?
+// A named constructor is useful when a class has different ways of initializing an object. A factory constructor is useful when object creation needs special control, such as returning a cached object.
+
+// Q3. What is the difference between assigning a field in a constructor body and assigning it in an initializer list?
+// An initializer list runs before the constructor body and is required for initializing final fields. The constructor body runs afterward.
+
+// Q4. Give one reason to use a getter instead of storing the value in a field, and one reason to use a setter instead of a public field.
+// A getter can calculate a value when it is requested instead of storing the calculated value. A setter can validate or modify a value before storing it.
