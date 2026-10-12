@@ -190,6 +190,18 @@ List<LibraryItem> buildShelf() {
   return shelf;
 }
 
+class Member {
+  final String name;
+  final MemberType type;
+  const Member(this.name, this.type);
+  Fine feeFor(LibraryItem item, int days) {
+    final fee = item.lateFee(days);
+    final cappedFee = LibraryItem.capFee(fee);
+    final discountedFee = type.applyDiscount(cappedFee);
+    return Fine(discountedFee);
+  }
+}
+
 Dvd mainDvd() {
   final int i = (u + 2) % 10;
 
@@ -373,5 +385,18 @@ void step9() {
 }
 
 void step10() {
-  print('--- Step 10 ---');
+  final shelf = buildShelf();
+  final member = Member('S$seed', MemberType.values[seed % 3]);
+  final total = shelf.fold(
+    Fine(0),
+    (sum, item) => sum + member.feeFor(item, daysLate),
+  );
+  final borrowableCount = shelf.where((item) => item is Borrowable).length;
+  final renewableCount = shelf.where((item) => item is Renewable).length;
+  print(
+    'Step 10: ${shelf.length} items, '
+    '$borrowableCount borrowable, $renewableCount renewable',
+  );
+  print('Step 10: ${member.name} (${member.type.name}) owes $total');
+  print('Step 10: over the cap? ${total > Fine(feeCap)}');
 }
