@@ -31,13 +31,15 @@ final int renewAttempts = 2 + u; // renewal attempts made in Step 5
 final int shelfSize = 3 + u % 4; // items on the shelf in Steps 9-10
 // ===========================================================================
 
-class LibraryItem {
+abstract class LibraryItem {
   final String title;
   final int year;
 
   LibraryItem(this.title, this.year);
 
   String describe() => '$title ($year)';
+
+  int lateFee(int days);
 }
 
 class Book extends LibraryItem {
@@ -47,8 +49,10 @@ class Book extends LibraryItem {
 
   @override
   String describe() => '${super.describe()}, $pages pages';
-}
 
+  @override
+  int lateFee(int days) => days * feePerDay;
+}
 
 class Magazine extends LibraryItem {
   final int issue;
@@ -57,19 +61,34 @@ class Magazine extends LibraryItem {
 
   @override
   String describe() => '${super.describe()}, issue $issue';
+
+  @override
+  int lateFee(int days) => days * (feePerDay ~/ 2);
 }
 
+class Dvd extends LibraryItem {
+  final int minutes;
+
+  Dvd(super.title, super.year, this.minutes);
+
+  @override
+  String describe() => '${super.describe()}, $minutes min';
+
+  @override
+  int lateFee(int days) => days * feePerDay * 2;
+}
+
+Dvd mainDvd() {
+  final int i = (u + 2) % 10;
+
+  return Dvd(titles[i], yearOf(i), 90 + seed % 40);
+}
 
 Magazine mainMagazine() {
   final int i = (u + 1) % 10;
 
-  return Magazine(
-    titles[i],
-    yearOf(i),
-    1 + (t + u) % 12,
-  );
+  return Magazine(titles[i], yearOf(i), 1 + (t + u) % 12);
 }
-
 
 Book mainBook() {
   return Book(titles[u], yearOf(u), 100 + 3 * seed);
@@ -103,7 +122,6 @@ void step1() {
   // type determines which members can be accessed directly.
 }
 
-
 void step2() {
   print('--- Step 2 ---');
 
@@ -116,9 +134,31 @@ void step2() {
   // description will not be used.
 }
 
-
 void step3() {
   print('--- Step 3 ---');
+
+  final Book book = mainBook();
+  final Magazine magazine = mainMagazine();
+  final Dvd dvd = mainDvd();
+
+  print(
+    'Step 3: Book late fee for $daysLate days = '
+    '${book.lateFee(daysLate)}',
+  );
+
+  print(
+    'Step 3: Magazine late fee for $daysLate days = '
+    '${magazine.lateFee(daysLate)}',
+  );
+
+  print(
+    'Step 3: Dvd late fee for $daysLate days = '
+    '${dvd.lateFee(daysLate)}',
+  );
+
+  // Think an abstract class cannot be instantiated directly
+  // because its abstract methods have no implementation
+  // a concrete subclass must implement those methods first.
 }
 
 void step4() {
@@ -148,3 +188,4 @@ void step9() {
 void step10() {
   print('--- Step 10 ---');
 }
+
