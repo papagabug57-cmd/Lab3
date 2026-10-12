@@ -140,6 +140,29 @@ extension ShelfMath on List<LibraryItem> {
   }
 }
 
+class Fine {
+  final int amount;
+  const Fine(this.amount);
+  Fine operator +(Fine other) {
+    return Fine(amount + other.amount);
+  }
+
+  bool operator >(Fine other) {
+    return amount > other.amount;
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is Fine && other.amount == amount;
+  }
+
+  @override
+  int get hashCode => amount.hashCode;
+
+  @override
+  String toString() => 'Fine($amount)';
+}
+
 Dvd mainDvd() {
   final int i = (u + 2) % 10;
 
@@ -293,7 +316,15 @@ void step7() {
 }
 
 void step8() {
-  print('--- Step 8 ---');
+  final f1 = Fine(mainBook().lateFee(daysLate));
+  final f2 = Fine(mainMagazine().lateFee(daysLate));
+  print('Step 8: $f1 + $f2 = ${f1 + f2}');
+  print('Step 8: first bigger? ${f1 > f2}');
+  print('Step 8: equal copies? ${f1 == Fine(f1.amount)}');
+  print(
+    'Step 8: set size = '
+    '${{f1, Fine(f1.amount), f2}.length}',
+  );
 }
 
 void step9() {
