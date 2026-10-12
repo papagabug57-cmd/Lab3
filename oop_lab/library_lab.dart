@@ -112,6 +112,19 @@ mixin Renewable {
   }
 }
 
+enum MemberType {
+  student(3, 50),
+  faculty(10, 20),
+  guest(1, 0);
+
+  final int maxLoans;
+  final int discountPercent;
+  const MemberType(this.maxLoans, this.discountPercent);
+  int applyDiscount(int fee) {
+    return fee - (fee * discountPercent ~/ 100);
+  }
+}
+
 Dvd mainDvd() {
   final int i = (u + 2) % 10;
 
@@ -235,7 +248,19 @@ void step5() {
 }
 
 void step6() {
-  print('--- Step 6 ---');
+  final memberType = MemberType.values[seed % 3];
+  final book = mainBook();
+  final feeBefore = book.lateFee(daysLate);
+
+  final feeAfter = memberType.applyDiscount(feeBefore);
+
+  print(
+    'Step 6: member ${memberType.name} '
+    '(index ${memberType.index})',
+  );
+  print('Step 6: max loans ${memberType.maxLoans}');
+  print('Step 6: fee before discount $feeBefore');
+  print('Step 6: fee after discount $feeAfter');
 }
 
 void step7() {
