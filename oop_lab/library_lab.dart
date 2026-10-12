@@ -42,10 +42,10 @@ abstract class LibraryItem {
   int lateFee(int days);
 }
 
-class Book extends LibraryItem implements Borrowable {
+class Book extends LibraryItem with Renewable implements Borrowable {
   final int pages;
   bool _out = false;
-  
+
   Book(super.title, super.year, this.pages);
 
   @override
@@ -80,7 +80,7 @@ class Magazine extends LibraryItem {
   int lateFee(int days) => days * (feePerDay ~/ 2);
 }
 
-class Dvd extends LibraryItem {
+class Dvd extends LibraryItem with Renewable {
   final int minutes;
 
   Dvd(super.title, super.year, this.minutes);
@@ -98,6 +98,18 @@ abstract class Borrowable {
   void borrow();
 
   void giveBack();
+}
+
+mixin Renewable {
+  int renewals = 0;
+  bool renew(int limit) {
+    if (renewals >= limit) {
+      return false;
+    }
+
+    renewals++;
+    return true;
+  }
 }
 
 Dvd mainDvd() {
@@ -206,7 +218,20 @@ void step4() {
 }
 
 void step5() {
-  print('--- Step 5 ---');
+  final book = mainBook();
+  var ok = 0;
+  for (var i = 0; i < renewAttempts; i++) {
+    if (book.renew(renewLimit)) {
+      ok++;
+    }
+  }
+
+  print(
+    'Step 5: renewed $ok of $renewAttempts attempts '
+    '(limit $renewLimit)',
+  );
+  print('Step 5: renew once more? ${book.renew(renewLimit)}');
+  print('Step 5: dvd can renew too? ${mainDvd().renew(1)}');
 }
 
 void step6() {
