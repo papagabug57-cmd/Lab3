@@ -36,13 +36,40 @@ class LibraryItem {
   final int year;
 
   LibraryItem(this.title, this.year);
+
+  String describe() => '$title ($year)';
 }
 
 class Book extends LibraryItem {
   final int pages;
 
   Book(super.title, super.year, this.pages);
+
+  @override
+  String describe() => '${super.describe()}, $pages pages';
 }
+
+
+class Magazine extends LibraryItem {
+  final int issue;
+
+  Magazine(super.title, super.year, this.issue);
+
+  @override
+  String describe() => '${super.describe()}, issue $issue';
+}
+
+
+Magazine mainMagazine() {
+  final int i = (u + 1) % 10;
+
+  return Magazine(
+    titles[i],
+    yearOf(i),
+    1 + (t + u) % 12,
+  );
+}
+
 
 Book mainBook() {
   return Book(titles[u], yearOf(u), 100 + 3 * seed);
@@ -76,9 +103,19 @@ void step1() {
   // type determines which members can be accessed directly.
 }
 
+
 void step2() {
   print('--- Step 2 ---');
+
+  print('Step 2: ${mainBook().describe()}');
+  print('Step 2: ${mainMagazine().describe()}');
+
+  // If @override is omitted and describe is misspelled as
+  // descibe. Dart treats it as a different method. The
+  // inherited describe remains unchanged. so the custom
+  // description will not be used.
 }
+
 
 void step3() {
   print('--- Step 3 ---');
