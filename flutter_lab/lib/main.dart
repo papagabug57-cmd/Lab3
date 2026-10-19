@@ -151,9 +151,32 @@ class _TallyState extends State<Tally> {
   int _count = startCount;
 
   // Add the step size and refresh the counter display.
+
   void _plus() {
     setState(() {
       _count += stepSize;
+
+      // Keep the count from exceeding the maximum goal.
+      if (_count > maxCount) {
+        _count = maxCount;
+      }
+    });
+  }
+
+  void _minus() {
+    setState(() {
+      _count -= stepSize;
+
+      // The count must never be negative.
+      if (_count < 0) {
+        _count = 0;
+      }
+    });
+  }
+
+  void _reset() {
+    setState(() {
+      _count = startCount;
     });
   }
 
@@ -164,12 +187,25 @@ class _TallyState extends State<Tally> {
       children: [
         Text('Count: $_count', key: const Key('count')),
         GoalBanner(count: _count, max: maxCount),
+
         Row(
           children: [
             ElevatedButton(
               key: const Key('plus'),
               onPressed: _plus,
               child: Text('+$stepSize'),
+            ),
+            const SizedBox(width: 8),
+            ElevatedButton(
+              key: const Key('minus'),
+              onPressed: _minus,
+              child: Text('-$stepSize'),
+            ),
+            const SizedBox(width: 8),
+            OutlinedButton(
+              key: const Key('reset'),
+              onPressed: _reset,
+              child: const Text('Reset'),
             ),
           ],
         ),
