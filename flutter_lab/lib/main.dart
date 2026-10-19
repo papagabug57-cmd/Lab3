@@ -48,18 +48,56 @@ class LabApp extends StatelessWidget {
   }
 }
 
-// Stateless: HomePage displays the course title and a greeting.
+// Think: The widget tree starts at MaterialApp, then Scaffold SingleChildScrollView, Column, Row, and finally the Max Text. Max Text is 6 widget edges below MaterialApp.
+
+ // Stateless: HomePage arranges the student card and study information.
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Study Tracker: $course')),
-      body: StudentCard(name: studentName, roll: rollNo, course: course),
+      appBar: AppBar(
+        title: Text('Study Tracker: $course'),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            StudentCard(
+              name: studentName,
+              roll: rollNo,
+              course: course,
+            ),
+            const SizedBox(height: 12),
+
+            // Displays the seeded study values in a horizontal row.
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Start: $startCount',
+                  key: const Key('info-start'),
+                ),
+                Text(
+                  'Step: $stepSize',
+                  key: const Key('info-step'),
+                ),
+                Text(
+                  'Max: $maxCount',
+                  key: const Key('info-max'),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
+
+// Think: The fields are final because a StatelessWidget configuration should not be reassigned after construction. Removing final permits reassignment but does not automatically rebuild the widget when changed.
 
 // Stateless: StudentCard displays information passed to it.
 class StudentCard extends StatelessWidget {
