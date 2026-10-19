@@ -76,6 +76,8 @@ class HomePage extends StatelessWidget {
             const SizedBox(height: 12),
             const Tally(),
             const SizedBox(height: 12),
+            const Countdown(),
+            const SizedBox(height: 12),
             const BuggyCounter(),
           ],
         ),
@@ -236,8 +238,7 @@ class _BuggyCounterState extends State<BuggyCounter> {
         ElevatedButton(
           key: const Key('bug-button'),
 
- // Before the fix, after three taps, _clicks was 3 * bugStep, but the screen still displayed Bug clicks: 0 because setState() was not called.
-
+          // Before the fix, after three taps, _clicks was 3 * bugStep, but the screen still displayed Bug clicks: 0 because setState() was not called.
           onPressed: () {
             setState(() {
               _clicks += bugStep;
@@ -248,5 +249,60 @@ class _BuggyCounterState extends State<BuggyCounter> {
         ),
       ],
     );
+  }
+}
+
+
+// Think: If the timer is not cancelled in dispose(), its callback may call setState() after the State object has been disposed Flutter reports that setState() was called after dispose().
+
+
+class Countdown extends StatefulWidget {
+  const Countdown({super.key});
+
+  @override
+  State<Countdown> createState() => _CountdownState();
+}
+
+class _CountdownState extends State<Countdown> {
+  late int _left;
+  late Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Record when this State object is initialized.
+    lifecycleLog.add('initState');
+
+    // Start the countdown from the seeded value.
+    _left = startSeconds;
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        _left--;
+      });
+
+      // Stop the timer when the countdown reaches zero.
+      if (_left <= 0) {
+        timer.cancel();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    // Cancel the timer before this State object is disposed.
+    _timer.cancel();
+    lifecycleLog.add('dispose');
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_left > 0) {
+      return Text('Time left: $_left s', key: const Key('time-left'));
+    }
+
+    return const Text('Time is up!', key: Key('time-left'));
   }
 }
