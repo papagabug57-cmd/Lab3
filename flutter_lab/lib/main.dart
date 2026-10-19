@@ -252,9 +252,7 @@ class _BuggyCounterState extends State<BuggyCounter> {
   }
 }
 
-
 // Think: If the timer is not cancelled in dispose(), its callback may call setState() after the State object has been disposed Flutter reports that setState() was called after dispose().
-
 
 class Countdown extends StatefulWidget {
   const Countdown({super.key});
@@ -264,7 +262,7 @@ class Countdown extends StatefulWidget {
 }
 
 class _CountdownState extends State<Countdown> {
-     late int _left;
+  late int _left;
   late Timer _timer;
   int _builds = 0;
 
@@ -272,7 +270,7 @@ class _CountdownState extends State<Countdown> {
   void initState() {
     super.initState();
 
-lifecycleLog.add('initState');
+    lifecycleLog.add('initState');
 
     // Record when this State object is initialized.
     lifecycleLog.add('initState');
@@ -298,34 +296,22 @@ lifecycleLog.add('initState');
     _timer.cancel();
     lifecycleLog.add('dispose');
     super.dispose();
-    
   }
 
-  
-@override
-Widget build(BuildContext context) {
-  // Count each time this widget builds.
-  _builds++;
+  @override
+  Widget build(BuildContext context) {
+    // Count each time this widget builds.
+    _builds++;
 
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      if (_left > 0)
-        Text(
-          'Time left: $_left s',
-          key: const Key('time-left'),
-        )
-      else
-        const Text(
-          'Time is up!',
-          key: Key('time-left'),
-        ),
-      Text(
-        'Builds: $_builds',
-        key: const Key('builds'),
-      ),
-    ],
-  );
-}
-
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (_left > 0)
+          Text('Time left: $_left s', key: const Key('time-left'))
+        else
+          const Text('Time is up!', key: Key('time-left')),
+        Text('Builds: $_builds', key: const Key('builds')),
+      ],
+    );
+  }
 }
