@@ -50,46 +50,31 @@ class LabApp extends StatelessWidget {
 
 // Think: The widget tree starts at MaterialApp, then Scaffold SingleChildScrollView, Column, Row, and finally the Max Text. Max Text is 6 widget edges below MaterialApp.
 
- // Stateless: HomePage arranges the student card and study information.
+// Stateless: HomePage arranges the student card and study information.
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Study Tracker: $course'),
-      ),
+      appBar: AppBar(title: Text('Study Tracker: $course')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            StudentCard(
-              name: studentName,
-              roll: rollNo,
-              course: course,
-            ),
+            StudentCard(name: studentName, roll: rollNo, course: course),
             const SizedBox(height: 12),
-
-            // Displays the seeded study values in a horizontal row.
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Start: $startCount',
-                  key: const Key('info-start'),
-                ),
-                Text(
-                  'Step: $stepSize',
-                  key: const Key('info-step'),
-                ),
-                Text(
-                  'Max: $maxCount',
-                  key: const Key('info-max'),
-                ),
+                Text('Start: $startCount', key: const Key('info-start')),
+                Text('Step: $stepSize', key: const Key('info-step')),
+                Text('Max: $maxCount', key: const Key('info-max')),
               ],
             ),
+            const SizedBox(height: 12),
+            GoalBanner(count: startCount, max: maxCount),
           ],
         ),
       ),
@@ -126,6 +111,27 @@ class StudentCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+// Think: GoalBanner does not need setState because it receives its count and max as input values. To show a new count, its parent can rebuild it with the updated values.
+
+// Stateless: GoalBanner displays progress based on the values it receives.
+class GoalBanner extends StatelessWidget {
+  final int count;
+  final int max;
+
+  const GoalBanner({super.key, required this.count, required this.max});
+
+  @override
+  Widget build(BuildContext context) {
+    // Calculate the percentage using whole-number integer division.
+    final percent = count * 100 ~/ max;
+
+    return Text(
+      'Progress: $count of $max ($percent%)',
+      key: const Key('progress'),
     );
   }
 }
