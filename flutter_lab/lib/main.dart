@@ -75,6 +75,8 @@ class HomePage extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             const Tally(),
+            const SizedBox(height: 12),
+            const BuggyCounter(),
           ],
         ),
       ),
@@ -233,9 +235,15 @@ class _BuggyCounterState extends State<BuggyCounter> {
         const SizedBox(width: 12),
         ElevatedButton(
           key: const Key('bug-button'),
+
+ // Before the fix, after three taps, _clicks was 3 * bugStep, but the screen still displayed Bug clicks: 0 because setState() was not called.
+
           onPressed: () {
-            _clicks += bugStep;
+            setState(() {
+              _clicks += bugStep;
+            });
           },
+
           child: Text('+$bugStep'),
         ),
       ],
