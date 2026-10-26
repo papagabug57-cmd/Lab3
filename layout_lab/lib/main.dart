@@ -108,8 +108,11 @@ class HomePage extends StatelessWidget {
           children: [
             const SettingsCard(),
             const SizedBox(height: 12),
+            const Welcome(),
+            const SizedBox(height: 12),
             const Clock(),
-
+            const SizedBox(height: 12),
+            Row(children: [Tile(tileA), Tile(tileB), Tile(tileC)]),
             // Add each new widget BELOW the previous one, in the order the
             // steps tell you, with a SizedBox(height: 12) between widgets.
           ],
@@ -241,6 +244,38 @@ class Probe extends StatelessWidget {
   }
 }
 
+class Welcome extends StatelessWidget {
+  const Welcome({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('Welcome, $studentName', key: const Key('welcome')),
+    );
+  }
+}
+
+class Tile extends StatefulWidget {
+  const Tile(this.label, {super.key});
+
+  final String label;
+
+  @override
+  State<Tile> createState() => _TileState();
+}
+
+class _TileState extends State<Tile> {
+  int taps = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () => setState(() => taps++),
+      child: Text('${widget.label}: $taps'),
+    );
+  }
+}
+
 // Think:
 // The timer belongs in initState because it run once when the State is initialized then Starting it build would create additional timers during rebuilds  causing the clock to speed up.
 
@@ -249,3 +284,6 @@ class Probe extends StatelessWidget {
 
 // Step3 Think:
 // widget objects are configuration descriptions that can be recreated during rebuilds  The Element stays in the tree and connects the widget configuration to its location and State RenderObject handles layout, painting, and hit testing.
+
+// Step4 Think:
+//this uses composition tile is built from an Elevatedbutton and Text instead of extending a builtin button class composition makes widgets reusable and lets each tile manage its own state.
