@@ -115,6 +115,8 @@ class HomePage extends StatelessWidget {
             const SwapBoard(),
             const SizedBox(height: 12),
             const InfoPanel(),
+            const SizedBox(height: 12),
+            const SummaryRow(),
 
             // Add each new widget BELOW the previous one, in the order the
             // steps tell you, with a SizedBox(height: 12) between widgets.
@@ -154,17 +156,23 @@ class SummaryRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Text(
-          'Part A: read the widget tree of the $course board from top to bottom.',
-          key: const Key('sum-a'),
+        Expanded(
+          child: Text(
+            'Part A: read the widget tree of the $course board from top to bottom.',
+            key: const Key('sum-a'),
+          ),
         ),
-        Text(
-          'Part B: build each box from small widgets and never extend a built-in class.',
-          key: const Key('sum-b'),
+        Expanded(
+          child: Text(
+            'Part B: build each box from small widgets and never extend a built-in class.',
+            key: const Key('sum-b'),
+          ),
         ),
-        Text(
-          'Part C: break the layout on purpose, then fix it with Expanded or Wrap.',
-          key: const Key('sum-c'),
+        Expanded(
+          child: Text(
+            'Part C: break the layout on purpose, then fix it with Expanded or Wrap.',
+            key: const Key('sum-c'),
+          ),
         ),
       ],
     );
@@ -360,3 +368,6 @@ class InfoPanel extends StatelessWidget {
 
 // Step6 Think:
 // column main axis is vertical, and its cross axis is horizontal so CrossAxisAlignment.center centers children left-to-right not up-and-down.
+
+// Step7 Think: 
+// constraints go down from Row to Expanded and then to Text. each Text receives a limited width and wraps its words within it the children report their resulting sizes back up the widget tree.
