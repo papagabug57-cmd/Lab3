@@ -175,10 +175,12 @@ class Clock extends StatefulWidget {
 class _ClockState extends State<Clock> {
   late Timer _timer;
   int _seconds = startSec;
+  int _builds = 0;
 
   @override
   void initState() {
     super.initState();
+    lifecycleLog.add('initState');
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() => _seconds += tick);
@@ -188,9 +190,26 @@ class _ClockState extends State<Clock> {
   }
 
   @override
+  void dispose() {
+    _timer.cancel();
+    lifecycleLog.add('dispose');
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Text('Session: $_seconds s', key: const Key('clock'));
+    _builds++;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Session: $_seconds s', key: const Key('clock')),
+        Text('Builds: $_builds', key: const Key('builds')),
+      ],
+    );
   }
 }
 // Think:
 // The timer belongs in initState because it run once when the State is initialized then Starting it build would create additional timers during rebuilds  causing the clock to speed up.
+
+// Step2 Think:
+// each timer tick calls setState once build runs once per tick if the timer were not cancelled in dispose it could call setState after removal causing a error.
