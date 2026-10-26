@@ -114,6 +114,7 @@ class HomePage extends StatelessWidget {
             const SizedBox(height: 12),
             const SwapBoard(),
             const SizedBox(height: 12),
+            const InfoPanel(),
 
             // Add each new widget BELOW the previous one, in the order the
             // steps tell you, with a SizedBox(height: 12) between widgets.
@@ -310,6 +311,38 @@ class _SwapBoardState extends State<SwapBoard> {
   }
 }
 
+class InfoPanel extends StatelessWidget {
+  const InfoPanel({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          key: const Key('info-row'),
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Start: $startSec s', key: const Key('row-a')),
+            Text('Tick: $tick s', key: const Key('row-b')),
+            Text('Stop: $stopAt s', key: const Key('row-c')),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Column(
+          key: const Key('info-col'),
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text('Name: $studentName', key: const Key('col-a')),
+            Text('Roll no: $rollNo', key: const Key('col-b')),
+            Text('Course: $course', key: const Key('col-c')),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
 // Think:
 // The timer belongs in initState because it run once when the State is initialized then Starting it build would create additional timers during rebuilds  causing the clock to speed up.
 
@@ -324,3 +357,6 @@ class _SwapBoardState extends State<SwapBoard> {
 
 // Step5 Think:
 // without keys, Flutter matches widgets by type and position tile widget configuration changes, but the element at each position retains its state. valuekey lets Flutter match each tile by label so its State follows it when the order changes.
+
+// Step6 Think:
+// column main axis is vertical, and its cross axis is horizontal so CrossAxisAlignment.center centers children left-to-right not up-and-down.
