@@ -204,12 +204,48 @@ class _ClockState extends State<Clock> {
       children: [
         Text('Session: $_seconds s', key: const Key('clock')),
         Text('Builds: $_builds', key: const Key('builds')),
+        Probe(seconds: _seconds),
       ],
     );
   }
 }
+
+class Probe extends StatelessWidget {
+  final int seconds;
+
+  const Probe({super.key, required this.seconds});
+
+  @override
+  Widget build(BuildContext context) {
+    final above = context.findAncestorWidgetOfExactType<Scaffold>() != null;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Seen at: $seconds s', key: const Key('probe-seen')),
+        Text(
+          'Widget #${identityHashCode(this)}',
+          key: const Key('probe-widget'),
+        ),
+        Text(
+          'Element #${identityHashCode(context)}',
+          key: const Key('probe-element'),
+        ),
+        Text(
+          'Context belongs to: ${context.widget.runtimeType}',
+          key: const Key('probe-context'),
+        ),
+        Text('Scaffold above me: $above', key: const Key('probe-above')),
+      ],
+    );
+  }
+}
+
 // Think:
 // The timer belongs in initState because it run once when the State is initialized then Starting it build would create additional timers during rebuilds  causing the clock to speed up.
 
 // Step2 Think:
 // each timer tick calls setState once build runs once per tick if the timer were not cancelled in dispose it could call setState after removal causing a error.
+
+// Step3 Think:
+// widget objects are configuration descriptions that can be recreated during rebuilds  The Element stays in the tree and connects the widget configuration to its location and State RenderObject handles layout, painting, and hit testing.
