@@ -117,6 +117,8 @@ class HomePage extends StatelessWidget {
             const InfoPanel(),
             const SizedBox(height: 12),
             const SummaryRow(),
+            const SizedBox(height: 12),
+            const ShareRow(),
 
             // Add each new widget BELOW the previous one, in the order the
             // steps tell you, with a SizedBox(height: 12) between widgets.
@@ -351,6 +353,40 @@ class InfoPanel extends StatelessWidget {
   }
 }
 
+class ShareRow extends StatelessWidget {
+  const ShareRow({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      key: const Key('share-row'),
+      children: [
+        SizedBox(
+          key: const Key('fixed'),
+          width: fixedW,
+          child: ElevatedButton(onPressed: () {}, child: const Text('F')),
+        ),
+        Expanded(
+          flex: flexA,
+          child: ElevatedButton(
+            key: const Key('exp'),
+            onPressed: () {},
+            child: const Text('Exp'),
+          ),
+        ),
+        Flexible(
+          flex: flexB,
+          child: ElevatedButton(
+            key: const Key('flex'),
+            onPressed: () {},
+            child: const Text('Flex'),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 // Think:
 // The timer belongs in initState because it run once when the State is initialized then Starting it build would create additional timers during rebuilds  causing the clock to speed up.
 
@@ -369,5 +405,9 @@ class InfoPanel extends StatelessWidget {
 // Step6 Think:
 // column main axis is vertical, and its cross axis is horizontal so CrossAxisAlignment.center centers children left-to-right not up-and-down.
 
-// Step7 Think: 
+// Step7 Think:
 // constraints go down from Row to Expanded and then to Text. each Text receives a limited width and wraps its words within it the children report their resulting sizes back up the widget tree.
+
+
+// Step8 Think:
+// expanded uses flexible with FlexFit.tight so its child fills its allocated space.
