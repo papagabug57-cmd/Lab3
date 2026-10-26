@@ -112,7 +112,9 @@ class HomePage extends StatelessWidget {
             const SizedBox(height: 12),
             const Clock(),
             const SizedBox(height: 12),
-            Row(children: [Tile(tileA), Tile(tileB), Tile(tileC)]),
+            const SwapBoard(),
+            const SizedBox(height: 12),
+
             // Add each new widget BELOW the previous one, in the order the
             // steps tell you, with a SizedBox(height: 12) between widgets.
           ],
@@ -276,6 +278,38 @@ class _TileState extends State<Tile> {
   }
 }
 
+class SwapBoard extends StatefulWidget {
+  const SwapBoard({super.key});
+
+  @override
+  State<SwapBoard> createState() => _SwapBoardState();
+}
+
+class _SwapBoardState extends State<SwapBoard> {
+  var tiles = [
+    Tile(tileA, key: ValueKey(tileA)),
+    Tile(tileB, key: ValueKey(tileB)),
+    Tile(tileC, key: ValueKey(tileC)),
+  ];
+
+  void swap() => setState(() => tiles = tiles.reversed.toList());
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(children: tiles),
+        ElevatedButton(
+          key: const Key('swap'),
+          onPressed: swap,
+          child: const Text('Swap'),
+        ),
+      ],
+    );
+  }
+}
+
 // Think:
 // The timer belongs in initState because it run once when the State is initialized then Starting it build would create additional timers during rebuilds  causing the clock to speed up.
 
@@ -287,3 +321,6 @@ class _TileState extends State<Tile> {
 
 // Step4 Think:
 //this uses composition tile is built from an Elevatedbutton and Text instead of extending a builtin button class composition makes widgets reusable and lets each tile manage its own state.
+
+// Step5 Think:
+// without keys, Flutter matches widgets by type and position tile widget configuration changes, but the element at each position retains its state. valuekey lets Flutter match each tile by label so its State follows it when the order changes.
